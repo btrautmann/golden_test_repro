@@ -1,0 +1,37 @@
+name: check
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-channel: ['stable', 'beta']
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.flutter-channel }}
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter packages get
+
+      - name: Run tests
+        run: |
+          flutter --disable-analytics
+          flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+
+      - name: Upload failures
+        if: failure()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: "golden_failures_${{ matrix.flutter-channel }}"
+          path: |
+            **/failures/**/*.png
