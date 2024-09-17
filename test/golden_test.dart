@@ -5,6 +5,7 @@ void main() {
   testWidgets('ElevatedButton', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData.light(useMaterial3: false),
         home: Scaffold(
           body: Center(
             child: ElevatedButton(
